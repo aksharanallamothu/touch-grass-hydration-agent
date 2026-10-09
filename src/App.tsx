@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { BottleTelemetry, UserHydrationGoal, HardwareConfig, AlertMessage } from './types';
 import { EdgeAIEngine } from './services/edgeAI';
 import { buzzer } from './services/audioBuzzer';
+import { voiceAlerts } from './services/voiceAlerts';
 import { bleManager } from './services/webBluetooth';
 import { Navbar } from './components/Navbar';
 import { BottleSimulator } from './components/BottleSimulator';
@@ -72,8 +73,9 @@ export const App: React.FC = () => {
     },
   ]);
 
-  // Audio Mute State
+  // Audio & Voice State
   const [isMuted, setIsMuted] = useState(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
   const [isBleConnected, setIsBleConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'CODE_GEN' | 'LOGS'>('DASHBOARD');
 
@@ -118,8 +120,9 @@ export const App: React.FC = () => {
       lastSipTime: nowTime,
     }));
 
-    // Sound Piezo Chirp
+    // Sound Piezo Chirp & Spoken Voice Alert
     buzzer.playSipChirp();
+    voiceAlerts.announceSip(newVolume, newSipCount);
 
     // Log Event
     const newLog: AlertMessage = {
@@ -190,6 +193,12 @@ export const App: React.FC = () => {
         onConnectBle={handleConnectBle}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
+        isVoiceEnabled={isVoiceEnabled}
+        onToggleVoice={() => {
+          const next = !isVoiceEnabled;
+          setIsVoiceEnabled(next);
+          voiceAlerts.setEnabled(next);
+        }}
         isOutdoorMode={telemetry.isOutdoorMode}
         outdoorSeconds={telemetry.outdoorSeconds}
       />

@@ -1,11 +1,13 @@
 import React from 'react';
-import { Sun, Volume2, VolumeX, Bluetooth, Cpu, Zap } from 'lucide-react';
+import { Sun, Volume2, VolumeX, Bluetooth, Cpu, Zap, Mic, MicOff } from 'lucide-react';
 
 interface NavbarProps {
   isBleConnected: boolean;
   onConnectBle: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
+  isVoiceEnabled: boolean;
+  onToggleVoice: () => void;
   isOutdoorMode: boolean;
   outdoorSeconds: number;
 }
@@ -15,6 +17,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onConnectBle,
   isMuted,
   onToggleMute,
+  isVoiceEnabled,
+  onToggleVoice,
   isOutdoorMode,
   outdoorSeconds
 }) => {
@@ -63,6 +67,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               {formatTime(outdoorSeconds)}
             </span>
           </div>
+
+          {/* Voice Text-to-Speech Toggle */}
+          <button
+            onClick={onToggleVoice}
+            className={`p-2 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition ${
+              isVoiceEnabled
+                ? 'bg-teal-500/10 text-teal-300 border-teal-500/30'
+                : 'bg-slate-900 text-slate-500 border-slate-800'
+            }`}
+            title={isVoiceEnabled ? "Text-to-Speech Spoken Alerts Active" : "Text-to-Speech Voice Muted"}
+          >
+            {isVoiceEnabled ? <Mic className="w-4 h-4 text-teal-400" /> : <MicOff className="w-4 h-4 text-slate-500" />}
+            <span className="hidden md:inline font-mono text-[10px]">VOICE TTS</span>
+          </button>
 
           {/* Sound Mute Toggle */}
           <button
